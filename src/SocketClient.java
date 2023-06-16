@@ -1,27 +1,54 @@
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class SocketClient {
-    Socket socket;
-    public static void open(String host, int port) throws IOException {
-        socket = new Socket(host, port);
+    public static final InetAddress host;
+
+    static {
+        try {
+            host = InetAddress.getByName("localhost");
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void write(String data) throws IOException {
-        // get the output stream from the socket.
-        OutputStream outputStream = socket.getOutputStream();
-        // create a data output stream from the output stream so we can send data through it
-        DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+    public static final int port = 7777;
 
-        // write the message we want to send
-        dataOutputStream.writeUTF(data);
-        dataOutputStream.flush(); // send the message
-        dataOutputStream.close(); // close the output stream when we're done.
-    }
 
-    public void close() throws IOException {
-        socket.close();
+    public static void main(String[] args) throws IOException {
+        BufferedReader inFromUser = new BufferedReader(new InputStreamReader(
+                System.in));
+        Socket clientSocket = new Socket(SocketClient.host, SocketClient.port);
+        DataOutputStream outToServer = new DataOutputStream(
+                clientSocket.getOutputStream());
+        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(
+                clientSocket.getInputStream()));
+        System.out.println("Successfully connected");
+        System.out.println("Input move");
+        String input = inFromUser.readLine();
+        if (Moves.contains(input)) {
+            System.out.println("Bad move, try again");
+            input = inFromUser.readLine();
+        }
+
+
+        // Transmit
+        outToServer.writeBytes(input + "\n");
+
+        // Display responses
+        String line;
+        StringBuilder output = new StringBuilder();
+        while ((line = inFromServer.readLine()) != null) { // No better way to do this
+            output.append(line).append(System.getProperty("line.separator"));
+        }
+
+        System.out.println(output);
+        // Close socket
+        clientSocket.close();
     }
 }
