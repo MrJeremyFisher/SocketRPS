@@ -7,8 +7,9 @@ public class SocketServer {
     private static final int port = 7777;
     static final Map<String, String> losingCombinations = MoveUtils.map();
 
-    public static void main(String[] args) throws IOException {
+    public static void exec() throws IOException {
         ServerSocket ServerSocket = new ServerSocket(port);
+        System.out.println("Launched");
 
         Socket client1 = ServerSocket.accept(); // blocking call, this will wait until a connection is attempted on this port.
         if (client1.isConnected()) {

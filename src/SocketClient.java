@@ -11,7 +11,7 @@ public class SocketClient {
 
     static {
         try {
-            host = InetAddress.getByName("localhost");
+            host = InetAddress.getByName("10.1.2.221");
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
@@ -20,7 +20,7 @@ public class SocketClient {
     public static final int port = 7777;
 
 
-    public static void main(String[] args) throws IOException {
+    public static void exec() throws IOException {
         BufferedReader inFromUser = new BufferedReader(new InputStreamReader(
                 System.in));
         Socket clientSocket = new Socket(SocketClient.host, SocketClient.port);
